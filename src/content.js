@@ -143,7 +143,7 @@ if (window.__clodCountInitialized) {
     const w5Sub = document.getElementById('cc-use-5hr-sub');
     if (w5Pct && w5Bar && w5Sub) {
       w5Pct.textContent = usageCache.fiveHrPct.toFixed(0) + '%';
-      w5Sub.textContent = usageCache.fiveHrReset ? \`Resets \${usageCache.fiveHrReset}\` : 'Active';
+      w5Sub.textContent = usageCache.fiveHrReset ? `Resets ${usageCache.fiveHrReset}` : 'Active';
       setBar(w5Bar, usageCache.fiveHrPct);
     }
     
@@ -153,7 +153,7 @@ if (window.__clodCountInitialized) {
     const w7Sub = document.getElementById('cc-use-7day-sub');
     if (w7Pct && w7Bar && w7Sub) {
       w7Pct.textContent = usageCache.sevenDayPct.toFixed(0) + '%';
-      w7Sub.textContent = usageCache.sevenDayReset ? \`Resets \${usageCache.sevenDayReset}\` : 'Active';
+      w7Sub.textContent = usageCache.sevenDayReset ? `Resets ${usageCache.sevenDayReset}` : 'Active';
       setBar(w7Bar, usageCache.sevenDayPct);
     }
   }
