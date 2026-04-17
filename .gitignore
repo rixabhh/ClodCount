@@ -1,0 +1,43 @@
+# Default ignored files for ClodCount
+
+# ── OS files ──────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editor / IDE ──────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── Node (scripts tooling only) ───────────────────────
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ── Build artifacts ───────────────────────────────────
+dist/
+build/
+*.zip
+*.crx
+*.xpi
+
+# ── Environment ───────────────────────────────────────
+.env
+.env.local
+
+# ── Logs ─────────────────────────────────────────────
+*.log
+logs/
+
+# ── Temporary / scratch ───────────────────────────────
+tmp/
+temp/
+scratch/
+
+# ── PRD and internal planning docs ───────────────────
+PRD.md

@@ -1,0 +1,234 @@
+/**
+ * ClodCount Popup Styles
+ * Matches claude.ai's exact warm earthy palette — same as widget.css.
+ * Auto light/dark via prefers-color-scheme.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+/* ─── Variables ─────────────────────────────────────────────────────────────── */
+:root {
+  --font:        'Inter', system-ui, -apple-system, sans-serif;
+  --bg:          #faf8f5;
+  --surface:     #ffffff;
+  --border:      #e8e0d8;
+  --text-primary:   #1a1a18;
+  --text-secondary: #6b6560;
+  --text-muted:     #9b9590;
+  --accent:      #d97757;
+  --accent-hover:#c86843;
+  --radius-sm:   8px;
+  --radius-md:   12px;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.07);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:          #1a1918;
+    --surface:     #2a2826;
+    --border:      rgba(255,255,255,0.10);
+    --text-primary:   #f0ece6;
+    --text-secondary: #9b9590;
+    --text-muted:     #6b6560;
+    --accent:      #d97757;
+    --accent-hover:#e88968;
+    --shadow-sm:   0 1px 6px rgba(0,0,0,0.35);
+  }
+}
+
+/* ─── Reset ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Base ───────────────────────────────────────────────────────────────────── */
+html, body {
+  width: 280px;
+  font-family: var(--font);
+  font-size: 13px;
+  color: var(--text-primary);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────────────── */
+#popup-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+#popup-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+#popup-logo svg {
+  flex-shrink: 0;
+}
+
+#popup-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+#popup-sub {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* ─── Main ───────────────────────────────────────────────────────────────────── */
+#popup-main {
+  padding: 4px 0;
+}
+
+/* ─── Section ────────────────────────────────────────────────────────────────── */
+.popup-section {
+  padding: 12px 16px;
+}
+
+.popup-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  margin-bottom: 7px;
+  text-transform: uppercase;
+}
+
+.popup-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+/* ─── Select ─────────────────────────────────────────────────────────────────── */
+.popup-select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.popup-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 32px 8px 10px;
+  cursor: pointer;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease;
+}
+
+.popup-select:focus,
+.popup-select:hover {
+  border-color: var(--accent);
+}
+
+.popup-select-arrow {
+  position: absolute;
+  right: 10px;
+  font-size: 11px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* ─── Input ──────────────────────────────────────────────────────────────────── */
+.popup-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.popup-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 13px;
+  padding: 8px 10px;
+  outline: none;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s ease;
+  /* Remove number input spinners */
+  -moz-appearance: textfield;
+}
+
+.popup-input::-webkit-inner-spin-button,
+.popup-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.popup-input:focus,
+.popup-input:hover {
+  border-color: var(--accent);
+}
+
+.popup-input::placeholder {
+  color: var(--text-muted);
+}
+
+.popup-input-unit {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* ─── Divider ────────────────────────────────────────────────────────────────── */
+.popup-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 16px;
+}
+
+/* ─── Ghost Button ───────────────────────────────────────────────────────────── */
+.popup-btn-ghost {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+  text-align: center;
+}
+
+.popup-btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(217, 119, 87, 0.06);
+}
+
+/* ─── Footer ─────────────────────────────────────────────────────────────────── */
+#popup-footer {
+  border-top: 1px solid var(--border);
+  padding: 10px 16px;
+  background: var(--surface);
+}
+
+#footer-disclaimer {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  text-align: center;
+}

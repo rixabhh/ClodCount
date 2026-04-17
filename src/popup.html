@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ClodCount Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <header id="popup-header">
+    <div id="popup-logo">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 2L17.32 6.5V15.5L10 20L2.68 15.5V6.5L10 2Z" fill="var(--accent)" opacity="0.15"/>
+        <path d="M10 2L17.32 6.5V15.5L10 20L2.68 15.5V6.5L10 2Z" stroke="var(--accent)" stroke-width="1.4" fill="none"/>
+        <text x="10" y="13.5" text-anchor="middle" font-size="7" font-weight="700" fill="var(--accent)" font-family="Inter, sans-serif">CC</text>
+      </svg>
+      <div>
+        <span id="popup-title">ClodCount</span>
+        <span id="popup-sub">Token Estimator</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="popup-main">
+
+    <!-- Model Selector -->
+    <section class="popup-section" id="section-model">
+      <label class="popup-label" for="model-select">Model</label>
+      <div class="popup-select-wrapper">
+        <select id="model-select" class="popup-select">
+          <option value="claude-opus-4-5">Claude Opus 4.5</option>
+          <option value="claude-sonnet-4-5" selected>Claude Sonnet 4.5</option>
+          <option value="claude-haiku-3-5">Claude Haiku 3.5</option>
+        </select>
+        <span class="popup-select-arrow">▾</span>
+      </div>
+      <p class="popup-hint">Sets the context window limit for estimations.</p>
+    </section>
+
+    <div class="popup-divider"></div>
+
+    <!-- Custom Limit -->
+    <section class="popup-section" id="section-limit">
+      <label class="popup-label" for="custom-limit">Custom Context Limit</label>
+      <div class="popup-input-wrapper">
+        <input
+          type="number"
+          id="custom-limit"
+          class="popup-input"
+          placeholder="e.g. 100000"
+          min="1000"
+          max="2000000"
+          step="1000"
+        />
+        <span class="popup-input-unit">tokens</span>
+      </div>
+      <p class="popup-hint">Leave blank to use the selected model's default (200k).</p>
+    </section>
+
+    <div class="popup-divider"></div>
+
+    <!-- Reset -->
+    <section class="popup-section" id="section-reset">
+      <button id="reset-btn" class="popup-btn-ghost">Reset to Defaults</button>
+    </section>
+
+  </main>
+
+  <footer id="popup-footer">
+    <p id="footer-disclaimer">Token count is an estimate (±15–25%). Not affiliated with Anthropic.</p>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
