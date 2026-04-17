@@ -60,14 +60,16 @@ History          →  last 20 human-turn messages, summed
 
 ---
 
-## Installation (Developer Mode)
+## Installation
 
-1. **Download or clone** this repository
-2. Open Chrome → `chrome://extensions`
-3. Enable **Developer mode** (top-right toggle)
-4. Click **Load unpacked** → select the `ClodCount` folder
-5. Navigate to `https://claude.ai` — the widget appears bottom-right
+**Chrome / Edge / Chromium**
 
+1. Download [`ClodCount`](https://github.com/rixabhh/ClodCount/archive/refs/tags/v2.0.0.zip)
+2. Go to `chrome://extensions` and enable **Developer mode**
+3. Drag and drop the zip onto the page OR
+4. Extract the zip file.
+5. Click **Load unpacked** → select the `ClodCount` folder
+6. Navigate to `https://claude.ai` — the widget appears bottom-right
 ---
 
 ## File Structure
