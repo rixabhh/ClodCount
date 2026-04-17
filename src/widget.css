@@ -140,7 +140,8 @@
   font-size: 12px;
   color: var(--cc-text-secondary);
   flex-shrink: 0;
-  line-height: 1;
+  margin-right: 4px;
+  opacity: 0.6;
 }
 
 .cc-label {
@@ -152,40 +153,57 @@
 }
 
 .cc-pct {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--cc-text-primary);
-  min-width: 36px;
-  text-align: right;
+  margin-left: auto;
   font-variant-numeric: tabular-nums;
 }
 
 /* ─── Progress Bar ───────────────────────────────────────────────────────────── */
 .cc-bar-track {
   width: 100%;
-  height: 6px;
-  background: var(--cc-bar-track);
-  border-radius: 3px;
+  height: 4px;
+  background: var(--cc-track-bg);
+  border-radius: 4px;
   overflow: hidden;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .cc-bar-fill {
   height: 100%;
-  width: 0%;
   background: var(--cc-accent);
-  border-radius: 3px;
-  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              background-color 0.35s ease;
+  width: 0%;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
 }
 
 /* Bar states — color overrides */
-.cc-bar-fill.cc-bar-warning {
-  background: #c07c2a;
+.cc-bar-warning { background: #c07c2a; }
+.cc-bar-danger  { background: #c13232; }
+
+.cc-sub {
+  font-size: 11px;
+  color: var(--cc-text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
-.cc-bar-fill.cc-bar-danger {
-  background: #c13232;
+/* ─────────────────────────────────────────────────────────────
+   Hints
+───────────────────────────────────────────────────────────── */
+#cc-hints-container {
+  display: none;
+  font-size: 11px;
+  border-top: 1px solid var(--cc-border);
+  padding: 8px 12px;
+  background: rgba(217, 119, 87, 0.05);
+}
+#cc-hints-container.cc-has-hints {
+  display: block;
+}
+.cc-hint-item {
+  color: #c07c2a;
+  margin-bottom: 4px;
+  line-height: 1.4;
+}
+.cc-hint-item:last-child {
+  margin-bottom: 0;
 }
 
 #clodcount-widget.cc-dark .cc-bar-fill.cc-bar-warning {

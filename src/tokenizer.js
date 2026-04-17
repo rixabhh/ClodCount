@@ -122,6 +122,42 @@ function getStatus(pct) {
   return             { label: '● Safe',    cls: 'cc-safe'    };
 }
 
+/**
+ * Analyze prompt for optimization hints.
+ * @param {string} text
+ * @returns {string[]} Array of hint messages
+ */
+function analyzePrompt(text) {
+  const hints = [];
+  if (!text || text.trim().length === 0) return hints;
+  
+  const tokens = estimateTokens(text);
+  
+  // 1. Length warning
+  if (tokens > 50000) {
+    hints.push("Length warning: Input exceeds 50k tokens. Output quality may begin to degrade due to attention dilution.");
+  }
+  
+  // 2. Repetition check (naive: look for duplicate blocks of 500+ chars)
+  if (text.length > 2000) {
+    const largeBlocks = text.split('\n\n').filter(b => b.length > 500);
+    const seen = new Set();
+    let repeated = false;
+    for (const block of largeBlocks) {
+      if (seen.has(block)) {
+        repeated = true;
+        break;
+      }
+      seen.add(block);
+    }
+    if (repeated) {
+      hints.push("Repetition detected: Found redundant large text blocks. Consider cleaning up your prompt.");
+    }
+  }
+  
+  return hints;
+}
+
 // ─── Export to global scope (content.js imports these) ───────────────────────
 // Using window assignment since MV3 content scripts share the page's JS environment.
 window.__ccTokenizer = {
@@ -129,4 +165,5 @@ window.__ccTokenizer = {
   estimateHistory,
   getTotalContext,
   getStatus,
+  analyzePrompt,
 };

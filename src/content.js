@@ -113,6 +113,11 @@ if (window.__clodCountInitialized) {
             <span class="cc-label">CONTEXT USED</span>
             <span class="cc-pct" id="cc-ctx-pct">0%</span>
           </div>
+          <div class="cc-split" id="cc-split">
+            <span id="cc-split-in">In: 0</span>
+            <span id="cc-split-hist">Hist: 0</span>
+            <span id="cc-split-sys">Sys: 1k</span>
+          </div>
           <div class="cc-bar-track">
             <div class="cc-bar-fill" id="cc-ctx-bar"></div>
           </div>
@@ -120,6 +125,8 @@ if (window.__clodCountInitialized) {
         </div>
 
       </div>
+
+      <div id="cc-hints-container"></div>
 
       <div id="cc-footer">
         <span id="cc-status">● Safe</span>
@@ -247,21 +254,57 @@ if (window.__clodCountInitialized) {
     const ctxPct       = Math.min(100, (totalTokens  / limit) * 100);
     const remaining    = Math.max(0, limit - totalTokens);
     const status       = getStatus(ctxPct);
+    const hints        = window.__ccTokenizer.analyzePrompt ? window.__ccTokenizer.analyzePrompt(text) : [];
 
     updateWidget({
       inputTokens,
+      histTokens,
       totalTokens,
       limit,
       inputPct,
       ctxPct,
       remaining,
       status,
+      hints,
     });
+  }
+
+  // ─── Usage Limit DOM Scraping ──────────────────────────────────────────────
+
+  function checkUsageLimits() {
+    let limitMsg = null;
+    let limitType = null; // 'warning', 'danger'
+
+    // Look through all divs for Claude's limit text
+    // E.g., "7 messages remaining until 3:00 PM" or "You are out of free messages until 3:30 PM"
+    const elements = document.querySelectorAll('div, span, button');
+    for (const el of elements) {
+      if (!el.textContent) continue;
+      const text = el.textContent.trim();
+
+      // "out of free messages until 3:30 PM"
+      let match = text.match(/out of .*?messages until\s+(.*?)(?:\n|$)/i);
+      if (match && match[1]) {
+        limitMsg = `0 msgs left (resets ${match[1]})`;
+        limitType = 'danger';
+        break;
+      }
+
+      // "7 messages remaining until 3:00 PM"
+      match = text.match(/([0-9]+)\s+messages? remaining until\s+(.*?)(?:\n|$)/i);
+      if (match && match[1] && match[2]) {
+        limitMsg = `${match[1]} msgs left (resets ${match[2]})`;
+        limitType = match[1] <= 3 ? 'danger' : 'warning';
+        break;
+      }
+    }
+
+    return { limitMsg, limitType };
   }
 
   // ─── Widget DOM Updates ───────────────────────────────────────────────────
 
-  function updateWidget({ inputTokens, totalTokens, limit, inputPct, ctxPct, remaining, status }) {
+  function updateWidget({ inputTokens, histTokens, totalTokens, limit, inputPct, ctxPct, remaining, status, hints }) {
     if (!widgetEl) return;
 
     const $  = (id) => document.getElementById(id);
@@ -275,14 +318,38 @@ if (window.__clodCountInitialized) {
     // Context section
     $('cc-ctx-pct').textContent = pf(ctxPct) + '%';
     $('cc-ctx-sub').textContent = `Remaining: ~${fmtNum(remaining)}`;
+    
+    // Breakdown
+    const sysTokens = 1000;
+    $('cc-split-in').textContent = `In: ${fmtNum(inputTokens)}`;
+    $('cc-split-hist').textContent = `Hist: ${fmtNum(histTokens)}`;
+    $('cc-split-sys').textContent = `Sys: 1k`;
+
     setBar($('cc-ctx-bar'), ctxPct);
 
-    // Status
+    // Hints Update
+    const hintsEl = $('cc-hints-container');
+    if (hints && hints.length > 0) {
+      hintsEl.innerHTML = hints.map(h => `<div class="cc-hint-item">💡 ${h}</div>`).join('');
+      hintsEl.classList.add('cc-has-hints');
+    } else {
+      hintsEl.classList.remove('cc-has-hints');
+      hintsEl.innerHTML = '';
+    }
+
+    // Status & Usage
     const statusEl = $('cc-status');
-    statusEl.textContent = status.label;
-    statusEl.className = '';
-    if (ctxPct >= 90) statusEl.classList.add('cc-danger');
-    else if (ctxPct >= 75) statusEl.classList.add('cc-warning');
+    const limits = checkUsageLimits();
+    
+    if (limits.limitMsg) {
+      statusEl.textContent = `● ${limits.limitMsg}`;
+      statusEl.className = `cc-${limits.limitType}`;
+    } else {
+      statusEl.textContent = status.label;
+      statusEl.className = '';
+      if (ctxPct >= 90) statusEl.classList.add('cc-danger');
+      else if (ctxPct >= 75) statusEl.classList.add('cc-warning');
+    }
   }
 
   function setBar(barEl, pct) {
@@ -383,8 +450,9 @@ if (window.__clodCountInitialized) {
         // Re-inject widget if it was removed (rare, but SPA can nuke elements)
         if (!document.getElementById('clodcount-widget')) {
           injectWidget();
-          runUpdate();
         }
+        // Force update on DOM mutation to capture new chat history
+        runUpdate();
       }, 600);
     });
 
