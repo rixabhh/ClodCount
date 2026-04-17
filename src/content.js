@@ -194,7 +194,7 @@ if (window.__clodCountInitialized) {
         <div class="cc-section">
           <div class="cc-section-header">
             <span class="cc-icon">↗</span>
-            <span class="cc-label">INPUT TOKENS <span class="cc-help-icon" title="Tokens consumed by your current message box">[?]</span></span>
+            <span class="cc-label">CURRENT PROMPT <span class="cc-help-icon" title="Tokens consumed by your current message box">[?]</span></span>
             <span class="cc-pct" id="cc-input-pct">0%</span>
           </div>
           <div class="cc-bar-track">
@@ -206,7 +206,7 @@ if (window.__clodCountInitialized) {
         <div class="cc-section">
           <div class="cc-section-header">
             <span class="cc-icon">◎</span>
-            <span class="cc-label">CONTEXT USED <span class="cc-help-icon" title="Total accumulated tokens in this chat history">[?]</span></span>
+            <span class="cc-label">CHAT CONTEXT <span class="cc-help-icon" title="Total accumulated tokens in this chat history">[?]</span></span>
             <span class="cc-pct" id="cc-ctx-pct">0%</span>
           </div>
           <div class="cc-split" id="cc-split">
@@ -436,9 +436,27 @@ if (window.__clodCountInitialized) {
     $('cc-input-sub').textContent = `${fmtNum(inputTokens)} / ${fmtNum(limit)} tokens`;
     setBar($('cc-input-bar'), inputPct);
 
+    // Limit Cost Calculation for Context
+    let drainCost = '1x';
+    let drainLabel = 'Optimal';
+    let drainClass = 'cc-text-success';
+    if (totalTokens > 100000) {
+      drainCost = '10x';
+      drainLabel = 'Extreme drain';
+      drainClass = 'cc-text-danger';
+    } else if (totalTokens > 50000) {
+      drainCost = '4x';
+      drainLabel = 'High drain';
+      drainClass = 'cc-text-danger';
+    } else if (totalTokens > 20000) {
+      drainCost = '2x';
+      drainLabel = 'Moderate';
+      drainClass = 'cc-text-warning';
+    }
+
     // Context section
     $('cc-ctx-pct').textContent = pf(ctxPct) + '%';
-    $('cc-ctx-sub').textContent = `Remaining: ~${fmtNum(remaining)}`;
+    $('cc-ctx-sub').innerHTML = `Limit Cost: <span class="${drainClass}">${drainCost} (${drainLabel})</span>`;
     
     // Breakdown
     $('cc-split-in').textContent = `Prompt: ${fmtNum(inputTokens)}`;

@@ -188,7 +188,8 @@
   height: 100%;
   background: var(--cc-accent);
   width: 0%;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+  opacity: 0;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease, opacity 0.2s ease;
 }
 
 /* Bar states — color overrides */
@@ -200,6 +201,15 @@
   color: var(--cc-text-secondary);
   font-variant-numeric: tabular-nums;
 }
+
+/* ─── Text Utilities ─────────────────────────────────────────────────────────── */
+.cc-text-success { color: #5cb85c; font-weight: 600; }
+.cc-text-warning { color: #e9a647; font-weight: 600; }
+.cc-text-danger  { color: #da4f4f; font-weight: 600; }
+
+#clodcount-widget.cc-dark .cc-text-success { color: #4CAF50; }
+#clodcount-widget.cc-dark .cc-text-warning { color: #FFC107; }
+#clodcount-widget.cc-dark .cc-text-danger { color: #F44336; }
 
 /* ─────────────────────────────────────────────────────────────
    Hints
