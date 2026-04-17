@@ -282,16 +282,16 @@ if (window.__clodCountInitialized) {
       if (!el.textContent) continue;
       const text = el.textContent.trim();
 
-      // "out of free messages until 3:30 PM"
-      let match = text.match(/out of .*?messages until\s+(.*?)(?:\n|$)/i);
+      // "out of free messages until 3:30 PMUpgrade..."
+      let match = text.match(/out of .*?messages until\s*(\d{1,2}:\d{2}\s*(?:AM|PM))/i);
       if (match && match[1]) {
         limitMsg = `0 msgs left (resets ${match[1]})`;
         limitType = 'danger';
         break;
       }
 
-      // "7 messages remaining until 3:00 PM"
-      match = text.match(/([0-9]+)\s+messages? remaining until\s+(.*?)(?:\n|$)/i);
+      // "7 messages remaining until 3:00 PMUpgrade..."
+      match = text.match(/([0-9]+)\s*messages? remaining until\s*(\d{1,2}:\d{2}\s*(?:AM|PM))/i);
       if (match && match[1] && match[2]) {
         limitMsg = `${match[1]} msgs left (resets ${match[2]})`;
         limitType = match[1] <= 3 ? 'danger' : 'warning';

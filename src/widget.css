@@ -157,6 +157,23 @@
   font-variant-numeric: tabular-nums;
 }
 
+.cc-split {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  margin: 4px 0 8px;
+}
+
+.cc-split span {
+  background: var(--cc-track-bg);
+  color: var(--cc-text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
 /* ─── Progress Bar ───────────────────────────────────────────────────────────── */
 .cc-bar-track {
   width: 100%;
@@ -236,6 +253,10 @@
   font-weight: 500;
   color: var(--cc-safe);
   transition: color 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 175px;
 }
 
 #cc-status.cc-warning {
