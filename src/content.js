@@ -114,9 +114,8 @@ if (window.__clodCountInitialized) {
             <span class="cc-pct" id="cc-ctx-pct">0%</span>
           </div>
           <div class="cc-split" id="cc-split">
-            <span id="cc-split-in">In: 0</span>
-            <span id="cc-split-hist">Hist: 0</span>
-            <span id="cc-split-sys">Sys: 1k</span>
+            <span id="cc-split-in" title="Tokens in your current prompt">Prompt: 0</span>
+            <span id="cc-split-hist" title="Tokens consumed by past conversation memory">Memory: 0</span>
           </div>
           <div class="cc-bar-track">
             <div class="cc-bar-fill" id="cc-ctx-bar"></div>
@@ -320,10 +319,8 @@ if (window.__clodCountInitialized) {
     $('cc-ctx-sub').textContent = `Remaining: ~${fmtNum(remaining)}`;
     
     // Breakdown
-    const sysTokens = 1000;
-    $('cc-split-in').textContent = `In: ${fmtNum(inputTokens)}`;
-    $('cc-split-hist').textContent = `Hist: ${fmtNum(histTokens)}`;
-    $('cc-split-sys').textContent = `Sys: 1k`;
+    $('cc-split-in').textContent = `Prompt: ${fmtNum(inputTokens)}`;
+    $('cc-split-hist').textContent = `Memory: ${fmtNum(histTokens)}`;
 
     setBar($('cc-ctx-bar'), ctxPct);
 
@@ -355,6 +352,7 @@ if (window.__clodCountInitialized) {
   function setBar(barEl, pct) {
     if (!barEl) return;
     barEl.style.width = Math.min(100, pct) + '%';
+    barEl.style.opacity = pct > 0 ? '1' : '0';
     barEl.classList.remove('cc-bar-warning', 'cc-bar-danger');
     if (pct >= 90) barEl.classList.add('cc-bar-danger');
     else if (pct >= 75) barEl.classList.add('cc-bar-warning');
