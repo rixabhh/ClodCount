@@ -56,10 +56,106 @@ if (window.__clodCountInitialized) {
 
   async function init() {
     await loadPreferences();
+    injectBridge();
     injectWidget();
     attachInputListeners();
     startMutationObserver();
+    listenForUsage();
+    fetchInitialUsage();
     runUpdate();
+  }
+
+  // ─── Bridge & Usage Integration ──────────────────────────────────────────
+
+  function injectBridge() {
+    const s = document.createElement('script');
+    s.src = chrome.runtime.getURL('src/bridge.js');
+    s.onload = () => s.remove();
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  let usageCache = { fiveHrPct: 0, sevenDayPct: 0, fiveHrReset: '', sevenDayReset: '' };
+
+  function setUsageDataFromSSE(payload) {
+    if (!payload?.windows) return;
+    const w5 = payload.windows['5h'];
+    const w7 = payload.windows['7d'];
+    if (w5 && typeof w5.utilization === 'number') {
+      usageCache.fiveHrPct = Math.max(0, Math.min(100, w5.utilization * 100));
+      if (w5.resets_at) {
+        usageCache.fiveHrReset = new Date(w5.resets_at * 1000).toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'});
+      }
+    }
+    if (w7 && typeof w7.utilization === 'number') {
+      usageCache.sevenDayPct = Math.max(0, Math.min(100, w7.utilization * 100));
+      if (w7.resets_at) {
+        // usually show Day/Time for 7-day
+        usageCache.sevenDayReset = new Date(w7.resets_at * 1000).toLocaleDateString([], {weekday: 'short', hour: 'numeric', minute:'2-digit'});
+      }
+    }
+    updateWidgetUsageBars();
+  }
+
+  function listenForUsage() {
+    window.addEventListener('message', (event) => {
+      if (event.source !== window || !event.data || event.data.cc !== 'ClodCountBridge') return;
+      if (event.data.type === 'cc:message_limit') {
+        setUsageDataFromSSE(event.data.payload);
+      }
+    });
+  }
+
+  function getOrgIdFromCookie() {
+    try {
+      return document.cookie.split('; ').find(r => r.startsWith('lastActiveOrg='))?.split('=')[1] || null;
+    } catch { return null; }
+  }
+
+  async function fetchInitialUsage() {
+    const orgId = getOrgIdFromCookie();
+    if (!orgId) return;
+    try {
+      const res = await fetch(`https://claude.ai/api/organizations/${orgId}/usage`, { credentials: 'include' });
+      const raw = await res.json();
+      if (raw) {
+        if (raw.five_hour && typeof raw.five_hour.utilization === 'number') {
+          usageCache.fiveHrPct = Math.max(0, Math.min(100, raw.five_hour.utilization)); // already 0-100 here
+          if (raw.five_hour.resets_at) {
+             usageCache.fiveHrReset = new Date(raw.five_hour.resets_at).toLocaleTimeString([], {hour: 'numeric', minute:'2-digit'});
+          }
+        }
+        if (raw.seven_day && typeof raw.seven_day.utilization === 'number') {
+          usageCache.sevenDayPct = Math.max(0, Math.min(100, raw.seven_day.utilization));
+          if (raw.seven_day.resets_at) {
+             usageCache.sevenDayReset = new Date(raw.seven_day.resets_at).toLocaleDateString([], {weekday: 'short', hour: 'numeric', minute:'2-digit'});
+          }
+        }
+        updateWidgetUsageBars();
+      }
+    } catch (e) {
+      // safe fail
+    }
+  }
+
+  function updateWidgetUsageBars() {
+    const w5Pct = document.getElementById('cc-use-5hr-pct');
+    const w5Bar = document.getElementById('cc-use-5hr-bar');
+    const w5Sub = document.getElementById('cc-use-5hr-sub');
+    if (w5Pct && w5Bar && w5Sub) {
+      w5Pct.textContent = usageCache.fiveHrPct.toFixed(0) + '%';
+      w5Sub.textContent = usageCache.fiveHrReset ? \`Resets \${usageCache.fiveHrReset}\` : 'Active';
+      setBar(w5Bar, usageCache.fiveHrPct);
+    }
+    
+    // We update 7day when UI exists...
+    const w7Pct = document.getElementById('cc-use-7day-pct');
+    const w7Bar = document.getElementById('cc-use-7day-bar');
+    const w7Sub = document.getElementById('cc-use-7day-sub');
+    if (w7Pct && w7Bar && w7Sub) {
+      w7Pct.textContent = usageCache.sevenDayPct.toFixed(0) + '%';
+      w7Sub.textContent = usageCache.sevenDayReset ? \`Resets \${usageCache.sevenDayReset}\` : 'Active';
+      setBar(w7Bar, usageCache.sevenDayPct);
+    }
   }
 
   // ─── Preference Loading ───────────────────────────────────────────────────
@@ -98,7 +194,7 @@ if (window.__clodCountInitialized) {
         <div class="cc-section">
           <div class="cc-section-header">
             <span class="cc-icon">↗</span>
-            <span class="cc-label">INPUT TOKENS</span>
+            <span class="cc-label">INPUT TOKENS <span class="cc-help-icon" title="Tokens consumed by your current message box">[?]</span></span>
             <span class="cc-pct" id="cc-input-pct">0%</span>
           </div>
           <div class="cc-bar-track">
@@ -110,7 +206,7 @@ if (window.__clodCountInitialized) {
         <div class="cc-section">
           <div class="cc-section-header">
             <span class="cc-icon">◎</span>
-            <span class="cc-label">CONTEXT USED</span>
+            <span class="cc-label">CONTEXT USED <span class="cc-help-icon" title="Total accumulated tokens in this chat history">[?]</span></span>
             <span class="cc-pct" id="cc-ctx-pct">0%</span>
           </div>
           <div class="cc-split" id="cc-split">
@@ -121,6 +217,32 @@ if (window.__clodCountInitialized) {
             <div class="cc-bar-fill" id="cc-ctx-bar"></div>
           </div>
           <div class="cc-sub" id="cc-ctx-sub">Remaining: ~${fmtNum(prefs.effectiveLimit)}</div>
+        </div>
+
+        <div class="cc-divider"></div>
+
+        <div class="cc-section">
+          <div class="cc-section-header">
+            <span class="cc-icon">⏱</span>
+            <span class="cc-label">5-HOUR <span class="cc-help-icon" title="Claude's strict 5-hour rolling message limit">[?]</span></span>
+            <span class="cc-pct" id="cc-use-5hr-pct">0%</span>
+          </div>
+          <div class="cc-bar-track">
+            <div class="cc-bar-fill" id="cc-use-5hr-bar"></div>
+          </div>
+          <div class="cc-sub" id="cc-use-5hr-sub">Loading...</div>
+        </div>
+
+        <div class="cc-section">
+          <div class="cc-section-header">
+            <span class="cc-icon">📅</span>
+            <span class="cc-label">7-DAY <span class="cc-help-icon" title="Claude's long-term 7-day rolling limit threshold">[?]</span></span>
+            <span class="cc-pct" id="cc-use-7day-pct">0%</span>
+          </div>
+          <div class="cc-bar-track">
+            <div class="cc-bar-fill" id="cc-use-7day-bar"></div>
+          </div>
+          <div class="cc-sub" id="cc-use-7day-sub">Loading...</div>
         </div>
 
       </div>

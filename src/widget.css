@@ -307,3 +307,68 @@
 #clodcount-widget * {
   box-sizing: border-box;
 }
+
+/* ─── Dividers and Tooltips ─────────────────────────────────────────────────── */
+.cc-divider {
+  height: 1px;
+  background: var(--cc-border);
+  border: none;
+  margin: 12px 0;
+}
+
+.cc-help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: var(--cc-text-muted);
+  background: rgba(0,0,0,0.05);
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  margin-left: 4px;
+  cursor: help;
+  position: relative;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+#clodcount-widget.cc-dark .cc-help-icon {
+  background: rgba(255,255,255,0.1);
+}
+
+.cc-help-icon:hover {
+  color: var(--cc-text-primary);
+  background: rgba(0,0,0,0.1);
+}
+
+/* Tooltip implementation */
+.cc-help-icon:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-6px);
+  background: var(--cc-text-primary);
+  color: var(--cc-bg);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 400;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  line-height: 1.3;
+}
+
+.cc-help-icon:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--cc-text-primary);
+  pointer-events: none;
+}

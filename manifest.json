@@ -38,7 +38,10 @@
 
   "web_accessible_resources": [
     {
-      "resources": ["src/widget.css"],
+      "resources": [
+        "src/widget.css",
+        "src/bridge.js"
+      ],
       "matches": ["https://claude.ai/*"]
     }
   ],
